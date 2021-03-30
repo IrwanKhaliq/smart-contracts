@@ -26,7 +26,7 @@ contract FirstDApps {
     }
     
     modifier isNeedMoreCounter() {
-        require(person[msg.sender].counter >= 10, "You have to deposit more");
+        require(person[msg.sender].counter >= 10, "You're transaction history is under 10");
         _;
     }
     
@@ -53,11 +53,10 @@ contract FirstDApps {
         person[msg.sender].deposit += msg.value;
         person[msg.sender].counter++;
     }
-    function withdraw(uint _weiMoney) public shouldRegistered isNeedMoreCounter isWeiMoneyCorrect(_weiMoney) returns(string memory) {
+    function withdraw(uint _weiMoney) public shouldRegistered isNeedMoreCounter isWeiMoneyCorrect(_weiMoney) {
         //  need help for convert your money? https://eth-converter.com/extended-converter.html
         person[msg.sender].counter -= 10;
         person[msg.sender].deposit -= _weiMoney;
-        return "Yay!, withdraw success";
     }
 }
 // &copy; Irwan Syafani
