@@ -2,16 +2,12 @@
 pragma solidity 0.8.0;
 
 contract ICOContract {
-    struct Buyers {
-        uint token;
-    }
-    
     address private owner;
     uint public initialPrice;
     uint public totalSupply;
     uint public minimumPurchase;
     uint public periodOfOffer;
-    mapping(address => Buyers) internal buyers;
+    mapping(address => uint) internal buyers;
     
     constructor() {
         owner = msg.sender;
@@ -32,13 +28,25 @@ contract ICOContract {
         _;
     }
     
-    function myToken () public view returns(uint) {
-        return buyers[msg.sender].token;
+    modifier isContactExist() {
+        require(owner != address(0x00));
+        require(initialPrice != 0);
+        require(totalSupply != 0);
+        require(minimumPurchase != 0);
+        require(periodOfOffer != 0);
+        _;
     }
     
-    function purchase () public payable isMinimumPurchase isPeriodOfOffer {
+    function myToken () public view returns(uint) {
+        return buyers[msg.sender];
+    }
+    
+    function purchase () public payable isMinimumPurchase isPeriodOfOffer isContactExist {
+        // how to handle decimal in solidity??
         uint coins = msg.value / minimumPurchase;
-        buyers[msg.sender].token += coins;
+        buyers[msg.sender] += coins;
+        // uint remain = msg.value % minimumPurchase;
+        // payable(msg.sender).transfer(remain);
     }
     
     // setter
@@ -54,9 +62,9 @@ contract ICOContract {
         minimumPurchase = _weiMoney * 1 wei;
     }
     
-    function setPeriodOfOffer (uint _time) public isOwner {
+    function setPeriodOfOffer (uint _minutes) public isOwner {
         // https://www.epochconverter.com/ or below
-        periodOfOffer = block.timestamp +  _time * 60 seconds;
+        periodOfOffer = block.timestamp +  _minutes * 60 seconds;
     }
     
     // selfdestruct
